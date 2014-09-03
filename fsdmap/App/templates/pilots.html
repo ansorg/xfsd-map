@@ -1,8 +1,15 @@
 <div>
     <h3>pilots template</h3>
     <!--{{test.pilots}}-->
+    <p>Pilots</p>
     <ul>
-        <li ng-repeat="pilot in test.pilots">{{pilot.cs}}, {{pilot.name}}, {{pilot.acf}}</li>
+        <li ng-repeat="pilot in test.pilots">{{pilot.cs}}, {{pilot.acf}}, {{pilot.from}}-{{pilot.to}}
+            @{{pilot.lat}},{{pilot.lng}}, {{pilot.gs}}kt
+        </li>
+    </ul>
+    <p>Controller</p>
+    <ul>
+        <li ng-repeat="ctrlr in test.controllers">{{ctrlr.cs}}, {{ctrlr.name}}, {{ctrlr.acf}}</li>
     </ul>
 
 </div>
