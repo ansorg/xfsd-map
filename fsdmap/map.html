@@ -6,8 +6,21 @@
       <script src="App/app.js"></script>
       <script src="App/controllers/CtrlGmap.js"></script>
       <script src="App/directives/gmap.js"></script>
+      <script src="App/directives/pilots.js"></script>
+      <style type="text/css">div {
+          border: 1px dashed cornflowerblue
+      }</style>
   </head>
-  <body data-ng-app="gApp">
+  <!-- https://github.com/ericpanorel/AngularGmap -->
+  <body data-ng-app="gApp" ng-controller="GmapController as test">
+  <div>
+      <h3>in base html</h3>
+      {{test.map}}
+  </div>
+
+  <ja-gmap></ja-gmap>
+
+  <ja-pilots></ja-pilots>
 
   </body>
 </html>
