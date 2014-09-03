@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="xfsd.ansorg-web.de">
+    <serverData>
+      <paths name="xfsd.ansorg-web.de">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/fsdmap-aj" local="$PROJECT_DIR$/fsdmap" web="/fsdmap-aj" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
+
