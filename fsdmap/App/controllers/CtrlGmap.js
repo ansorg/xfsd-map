@@ -19,9 +19,19 @@ gApp.controller('GmapController', ['$scope', '$http',
             responseType: "document"
         }).success(function (clientData, status) {
             console.log(clientData);
-            for (var i = 0; i < clientData.lastChild.childNodes.length; i++) {
-                var clientElem = clientData.lastChild.childNodes[i];
-                instance.pilots.push(clientElem);
+            for (var i = 0; i < clientData.lastElementChild.children.length; i++) {
+                var clientElem = clientData.lastElementChild.children[i];
+                console.log(clientElem);
+                var s = "";
+                for (var i = 0; i < clientElem.attributes.length; i++) {
+                    s = s + '"' + clientElem.attributes.item(i).name + '":"' + clientElem.attributes.item(i).value
+                    if (i + 1 < clientElem.attributes.length) {
+                        s = s + '",'
+                    }
+                }
+                s = '{' + s + '"}';
+                var pilot = JSON.parse(s);
+                instance.pilots.push(pilot);
             }
         }).error(function (data, status) {
 
