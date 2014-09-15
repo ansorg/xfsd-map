@@ -2,27 +2,78 @@
 <html xml:lang="en">
   <head>
       <meta charset="utf-8">
-      <style type="text/css">div {
-          border: 1px dashed cornflowerblue
-      }</style>
+      <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'>
+      <style type="text/css">
+          html, body {
+              margin: 0;
+              width: 100%;
+              height: 100%;
+              font-family: 'Ubuntu Mono';
+          }
+
+          header, header *, aside, aside * {
+              box-sizing: border-box;
+          }
+
+          header {
+              position: absolute;
+              left: 0;
+              right: 20em;;
+              z-index: 1;
+          }
+
+          header div.translucent {
+              background-color: white;
+          }
+
+          aside {
+              position: absolute;
+              width: 20em;
+              top: 50px;
+              right: 0px;
+              bottom: 0px;
+              z-index: 2;
+          }
+
+          aside section {
+              margin: 10px;
+              position: relative;
+              font-size: 0.8rem;
+          }
+
+          aside:hover div.translucent {
+              opacity: 1;
+          }
+
+          div.translucent {
+              position: absolute;
+              top: 0;
+              width: 100%;
+              height: 100%;
+              background-color: antiquewhite;
+              opacity: 0.6;
+          }
+
+          #map-canvas {
+              height: 100%;
+              width: 100%;
+          }
+      </style>
   </head>
   <!-- https://github.com/ericpanorel/AngularGmap -->
-  <body ng-controller="GmapController as test">
-  <div>
+  <body ng-controller="GmapController as gc">
+  <header>
+      <div class="translucent"></div>
       <h3>in base html</h3>
-      {{test.map}}
-  </div>
+      {{gc.map}}
+  </header>
 
-  <ja-gmap>
-  </ja-gmap>
-  <ja-pilots></ja-pilots>
+  <fsdmap></fsdmap>
+  <sidebar></sidebar>
 
   <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
   <script type="text/javascript" src="App/app.js"></script>
-  <script type="text/javascript" src="App/controllers/CtrlGmap.js"></script>
   <script type="text/javascript" src="App/services/fsdDataService.js"></script>
-  <script type="text/javascript" src="App/directives/gmap.js"></script>
-  <script type="text/javascript" src="App/directives/pilots.js"></script>
 
   </body>
 </html>

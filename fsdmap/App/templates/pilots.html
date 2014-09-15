@@ -1,15 +1,20 @@
-<div>
-    <h3>pilots template</h3>
-    <!--{{test.pilots}}-->
-    <p>Pilots</p>
-    <ul>
-        <li ng-repeat="pilot in test.pilots">{{pilot.cs}}, {{pilot.acf}}, {{pilot.from}}-{{pilot.to}}
-            @{{pilot.lat}},{{pilot.lng}}, {{pilot.gs}}kt
-        </li>
-    </ul>
-    <p>Controller</p>
-    <ul>
-        <li ng-repeat="ctrlr in test.controllers">{{ctrlr.cs}}, {{ctrlr.name}}, {{ctrlr.acf}}</li>
-    </ul>
-
-</div>
+<aside>
+    <div class="translucent"></div>
+    <section>
+        <h3>pilots template</h3>
+        <!--{{test.pilots}}-->
+        <p>Pilots</p>
+        <ul>
+            <li ng-repeat="pilot in gc.clients.pilots" ng-click="centerClient($event)">{{pilot.cs}}, {{pilot.acf}},
+                {{pilot.from}}-{{pilot.to}}
+                @{{pilot.lat}},{{pilot.lng}}, {{pilot.gs}}kt
+            </li>
+        </ul>
+    </section>
+    <section>
+        <p>Controller</p>
+        <ul>
+            <li ng-repeat="atc in gc.clients.atcs">{{atc.cs}}, {{atc.name}}, {{atc.acf}}</li>
+        </ul>
+    </section>
+</aside>
