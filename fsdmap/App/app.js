@@ -3,18 +3,63 @@ var app = angular.module('app', []);
 
 app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', function ($scope, $interval, FsdDataService) {
     console.info("GmapController");
-    var fsdmap;
     var instance = this;
+    instance.isFirstRun = true;
     instance.clients = { pilots: [], atcs: [] };
-    instance.fsdData = { pilots: {}, atcs: [] };
+    instance.fsdData = { pilots: {}, atcs: {} };
     instance.timestamp = Date.now();
-    instance.registerMap = function (mapParam) {
-        fsdmap = mapParam;
-        console.info("storing map", fsdmap);
+
+    var planeIcons = {
+        D: {
+            fillColor: "gray",
+            fillOpacity: 0.4,
+            strokeColor: "red",
+            strokeWidth: 4,
+            path: "M56.5029 96.2693l0 -25.7829 -14.1736 2.98356c-0.930522,5.4773 -2.45367,9.04821 -4.1745,9.04821 -1.53638,0 -2.91516,-2.84826 -3.8555,-7.358l-18.663 3.92883 0 -16.4168 17.7132 -9.32562c0.728316,-8.19706 2.60523,-14.0353 4.8053,-14.0353 1.74539,0 3.28782,3.67484 4.21418,9.28632l14.1339 -7.44153 0 -1.31414 0 -14.092 0 -6.82244c0,-2.56101 3.95415,-7.30395 7.48953,-7.30395 3.53575,0 7.50464,4.36498 7.50464,7.30395l0 6.82244 0 14.092 0 1.31414 14.1339 7.44153c0.926364,-5.61148 2.46879,-9.28632 4.21418,-9.28632 2.20007,0 4.07698,5.83825 4.8053,14.0353l17.7132 9.32562 0 16.4168 -18.663 -3.92883c-0.940348,4.50974 -2.31912,7.358 -3.8555,7.358 -1.72082,0 -3.24397,-3.5709 -4.1745,-9.04821l-14.1736 -2.98356 0 25.7829 13.618 13.618 0 6.88669 -15.3937 -4.12461 -5.72146 0 -5.72146 0 -15.3937 4.12461 0 -6.88669 13.618 -13.618z",
+            anchor: new google.maps.Point(62, 62),
+            scale: 0.3,
+            rotation: -0
+        },
+        M: {
+            fillColor: "blue",
+            fillOpacity: 0.8,
+            strokeColor: "black",
+            strokeWidth: 0,
+            path: "M56.5029 96.2693l0 -25.7829 -14.1736 2.98356c-0.930522,5.4773 -2.45367,9.04821 -4.1745,9.04821 -1.53638,0 -2.91516,-2.84826 -3.8555,-7.358l-18.663 3.92883 0 -16.4168 17.7132 -9.32562c0.728316,-8.19706 2.60523,-14.0353 4.8053,-14.0353 1.74539,0 3.28782,3.67484 4.21418,9.28632l14.1339 -7.44153 0 -1.31414 0 -14.092 0 -6.82244c0,-2.56101 3.95415,-7.30395 7.48953,-7.30395 3.53575,0 7.50464,4.36498 7.50464,7.30395l0 6.82244 0 14.092 0 1.31414 14.1339 7.44153c0.926364,-5.61148 2.46879,-9.28632 4.21418,-9.28632 2.20007,0 4.07698,5.83825 4.8053,14.0353l17.7132 9.32562 0 16.4168 -18.663 -3.92883c-0.940348,4.50974 -2.31912,7.358 -3.8555,7.358 -1.72082,0 -3.24397,-3.5709 -4.1745,-9.04821l-14.1736 -2.98356 0 25.7829 13.618 13.618 0 6.88669 -15.3937 -4.12461 -5.72146 0 -5.72146 0 -15.3937 4.12461 0 -6.88669 13.618 -13.618z",
+            anchor: new google.maps.Point(62, 62),
+            scale: 0.3,
+            rotation: -0
+        },
+        L: {
+            fillColor: "green",
+            fillOpacity: 0.8,
+            strokeColor: "black",
+            strokeWidth: 0,
+            path: "M57.6954 78.3407l0 -17.0975 -27.2486 -0.626269 0 -14.7307 27.2486 -1.01783 0 -3.69676 0 -3.823c0,-3.22281 3.32523,-9.19183 6.2986,-9.19183 2.97298,0 6.31069,5.49355 6.31069,9.19183l0 3.823 0 3.69676 27.2486 1.01783 0 14.7307 -27.2486 0.626269 0 17.0975 12.6236 2.84864 0 7.05072 -12.9865 -0.425954 -5.94181 0 -5.94181 0 -12.9865 0.425954 0 -7.05072 12.6236 -2.84864z",
+            anchor: new google.maps.Point(62, 62),
+            scale: 0.4,
+            rotation: -0
+        },
+        H: {
+            fillColor: "darkblue",
+            fillOpacity: 0.8,
+            strokeColor: "black",
+            strokeWidth: 0,
+            path: "M35.4532 53.2703c0.791813,-7.6271 2.59919,-12.9589 4.70174,-12.9589 1.52542,0 2.89512,2.80668 3.83472,7.25897l12.316 -8.22351 0 -13.5969 0 -12.8315c0,-3.25909 4.05809,-9.29539 7.68682,-9.29539 3.62873,0 7.70194,5.55516 7.70194,9.29539l0 12.8315 0 13.5969 12.316 8.22351c0.939592,-4.45229 2.3093,-7.25897 3.83472,-7.25897 2.10256,0 3.90993,5.33179 4.70174,12.9589l7.39882 4.94023c0.940726,-3.82489 2.33046,-6.2453 3.88007,-6.2453 2.23635,0 4.13859,5.04077 4.84045,12.0684l12.3784 8.26509 0 16.4168 -13.7239 -5.48713c-0.916159,3.00322 -2.14451,4.84121 -3.49494,4.84121 -1.76731,0 -3.32637,-3.14835 -4.24895,-7.9374l-8.04134 -3.21525c-0.932789,4.06905 -2.24164,6.60134 -3.69034,6.60134 -1.79755,0 -3.37928,-3.89746 -4.29506,-9.79391l-11.8556 -4.73991 0 32.2217 17.559 14.6816 0 6.88669 -18.4105 -4.12461 -6.84285 0 -6.84285 0 -18.4105 4.12461 0 -6.88669 17.559 -14.6816 0 -32.2217 -11.8556 4.73991c-0.915781,5.89645 -2.49752,9.79391 -4.29506,9.79391 -1.4487,0 -2.75755,-2.53229 -3.69034,-6.60134l-8.04134 3.21525c-0.922584,4.78905 -2.48164,7.9374 -4.24895,7.9374 -1.35043,0 -2.57878,-1.83799 -3.49494,-4.84121l-13.7239 5.48713 0 -16.4168 12.3784 -8.26509c0.70186,-7.02767 2.6041,-12.0684 4.84045,-12.0684 1.54961,0 2.93934,2.42041 3.88007,6.2453l7.39882 -4.94023z",
+            anchor: new google.maps.Point(62, 62),
+            scale: 0.3,
+            rotation: -0
+        }
     };
 
-    $interval(function () {
-        fnLoadData();
+    var mapOptions = {
+        zoom: 8,
+        center: new google.maps.LatLng(20.397, 20.644)
+    };
+    var fsdmap = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+    $interval(function ($scope) {
+        loadData();
     }, 10000);
 
     $scope.$watch(
@@ -22,39 +67,129 @@ app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', funct
             this, function () {
                 return this.clients;
             }), function (newValue, oldValue) {
-            //TODO: this gets called twice, the first time without the controller scoped variables!?
-            if (!fsdmap) {
-                return;
-            }
-            console.info("GmapController $scope.$watch:", newValue, oldValue);
+            //console.info("GmapController $scope.$watch:", newValue, oldValue);
             if (newValue !== oldValue) {
                 console.info("values changed, update map and lists");
-                fnDrawMarkers(newValue);
+                cleanupClients(newValue);
+                drawMapMarkers(newValue);
             } else {
                 console.info("values not changed");
             }
         }, true);
 
-    var fnDrawMarkers = function (clients) {
-        clients.pilots.forEach(function (pilot) {
-            if (instance.fsdData.pilots.hasOwnProperty(pilot.cs)) {
+    var cleanupClients = function (clients) {
+        console.info("cleanupClients");
+        var clients = clients;
+        //https://docs.angularjs.org/api/ng/function/angular.forEach
+        angular.forEach(instance.fsdData.pilots, function (value, key) {
+            //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
+            var stillThere = clients.pilots.some(function (c) {
+                return c.cs == this
+            }, key);
+            console.info(key, 'still there?', stillThere);
+            if (!stillThere) {
+                instance.fsdData.pilots[key].marker.setMap(null);
+                instance.fsdData.pilots[key].flightPath.setMap(null);
+                delete instance.fsdData.pilots[key];
+            }
+        });
+    };
+
+    var getHeadingFromPath = function (p) {
+        if (p.length < 2) {
+            return 0;
+        }
+        var p1 = p.getAt(p.length - 2), p2 = p.getAt(p.length - 1);
+        if (p1.lat() == p2.lat() && p1.lng() == p2.lng()) {
+            //skip if not changed
+            return;
+        }
+        var newHdg = LatLon.bearing(parseFloat(p1.lat()), parseFloat(p1.lng()), parseFloat(p2.lat()), parseFloat(p2.lng()));
+        return newHdg.toFixed(0);
+    };
+
+    var getIconType = function (acf) {
+        var typeSuffix = "D";
+        var planeParams = acf.split('/');
+        if (planeParams.length > 2) {
+            typeSuffix = planeParams[2].charAt(0);
+        }
+        if (typeSuffix == "F") {
+            typeSuffix = "H";
+        }
+        return typeSuffix;
+    };
+
+    var updatePilotData = function (newData) {
+        //if pilot exists, update some properties else initialize new empty one
+        var pilot = instance.fsdData.pilots[newData.cs] || {};
+        pilot.acf = newData.acf;
+        pilot.alt = newData.alt;
+        pilot.cid = newData.cid;
+        pilot.cs = newData.cs;
+        pilot.from = newData.from;
+        pilot.gs = newData.gs;
+        pilot.lat = newData.lat;
+        pilot.lng = newData.lng;
+        pilot.name = newData.name;
+        pilot.rating = newData.rating;
+        pilot.route = newData.route;
+        pilot.to = newData.to;
+        pilot.type = newData.type;
+        pilot.T = getIconType(pilot.acf || '');
+        return pilot;
+    };
+
+    var drawMapMarkers = function (updatedClients) {
+        console.info("drawMapMarkers");
+        var bounds = new google.maps.LatLngBounds();
+        updatedClients.pilots.forEach(function (updatedPilot) {
+            if (instance.fsdData.pilots.hasOwnProperty(updatedPilot.cs)) {
+                var pilot = updatePilotData(updatedPilot);
                 var point = new google.maps.LatLng(pilot.lat, pilot.lng);
-                var marker = instance.fsdData.pilots[pilot.cs].marker;
-                var flightPath = instance.fsdData.pilots[pilot.cs].flightPath;
-                var follow = instance.fsdData.pilots[pilot.cs].follow;
+                var marker = pilot.marker;
+                var flightPath = pilot.flightPath;
                 var path = flightPath.getPath();
                 path.push(point);
                 marker.setPosition(point);
-                if (follow) {
+                pilot.hdg = getHeadingFromPath(path);
+                if (pilot.hdg) {
+                    console.info("set hdg", pilot.hdg);
+                    marker.setIcon({
+                        fillColor: planeIcons[pilot.T].fillColor,
+                        fillOpacity: planeIcons[pilot.T].fillOpacity,
+                        strokeColor: planeIcons[pilot.T].strokeColor,
+                        strokeWidth: planeIcons[pilot.T].strokeWidth,
+                        path: planeIcons[pilot.T].path,
+                        scale: planeIcons[pilot.T].scale,
+                        rotation: planeIcons[pilot.T].rotation + parseFloat(pilot.hdg),
+                        anchor: planeIcons[pilot.T].anchor
+                    });
+                    //add base icon rotation to actual heading
+                }
+                if (pilot.followed) {
+                    console.info("following", pilot.cs);
                     fsdmap.panTo(point);
                 }
             } else {
-                console.info("new pilot:", pilot);
-                var point = new google.maps.LatLng(pilot.lat, pilot.lng);
+                console.info("new pilot:", updatedPilot);
+                var pilot = updatePilotData(updatedPilot);
+                pilot.hdg = 0;
+                var point = new google.maps.LatLng(updatedPilot.lat, updatedPilot.lng);
                 var marker = new google.maps.Marker({
                     position: point,
                     map: fsdmap,
-                    title: pilot.cs
+                    title: updatedPilot.cs,
+                    icon: {
+                        fillColor: planeIcons[pilot.T].fillColor,
+                        fillOpacity: planeIcons[pilot.T].fillOpacity,
+                        strokeColor: planeIcons[pilot.T].strokeColor,
+                        strokeWidth: planeIcons[pilot.T].strokeWidth,
+                        path: planeIcons[pilot.T].path,
+                        scale: planeIcons[pilot.T].scale,
+                        anchor: planeIcons[pilot.T].anchor,
+                        rotation: planeIcons[pilot.T].rotation
+                    }
                 });
                 var flightPath = new google.maps.Polyline({
                     path: [point, point],
@@ -64,20 +199,73 @@ app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', funct
                     strokeWeight: 2
                 });
                 flightPath.setMap(fsdmap);
-                instance.fsdData.pilots[pilot.cs] = { marker: marker, flightPath: flightPath, follow: false };
+                pilot.marker = marker;
+                pilot.flightPath = flightPath;
+                instance.fsdData.pilots[updatedPilot.cs] = pilot;
+                bounds.extend(point);
             }
+        });
+        if (instance.isFirstRun) {
+            console.info("first run, show all clients");
+            fsdmap.panToBounds(bounds);
+            instance.isFirstRun = false;
+        }
+    };
+
+    $scope.followClient = function (evt, data) {
+        console.info("follow", data.pilot);
+        if (!instance.fsdData.pilots.hasOwnProperty(data.pilot.cs)) {
+            return;
+        }
+        fsdmap.panTo(new google.maps.LatLng(data.pilot.lat, data.pilot.lng));
+        angular.forEach(instance.fsdData.pilots, function (pilot) {
+            pilot.followed = (pilot.cs == data.pilot.cs);
         });
     };
 
-    $scope.centerClient = function () {
-        console.info(this.pilot);
-        var pilot = this.pilot;
-        fsdmap.panTo(new google.maps.LatLng(pilot.lat, pilot.lng));
+    $scope.centerClient = function (evt, data) {
+        console.info("center on", data.pilot);
+        fsdmap.panTo(new google.maps.LatLng(data.pilot.lat, data.pilot.lng));
     };
 
-    var fnLoadData = function ($scope) {
-        console.info("fnLoadData");
+    $scope.loadFP = function (evt, data) {
+        console.info("flightplan for", data.pilot);
+        var pilot = data.pilot;
+        if (!instance.fsdData.pilots.hasOwnProperty(pilot.cs)) {
+            return;
+        }
+        evt.currentTarget.classList.toggle("active");
+        if (instance.fsdData.pilots[pilot.cs].fp != null) {
+            //remove any existing track, toggle FP OFF
+            instance.fsdData.pilots[pilot.cs].fp.setMap(null);
+            delete instance.fsdData.pilots[pilot.cs].fp;
+        } else {
+            FsdDataService.fetchFP(pilot.cs, pilot.from, pilot.to, pilot.route).success(function (fp, status) {
+                console.info("FsdDataService::fetchFP::success");
+                console.log(fp);
+                if (fp.lines.length != 1) {
+                    return;
+                }
+                var path = [];
+                for (var i = 0; i < fp.lines[0].points.length; i++) {
+                    path.push(new google.maps.LatLng(fp.lines[0].points[i].lat, fp.lines[0].points[i].lng));
+                }
+                var mapPath = new google.maps.Polyline({
+                    path: path,
+                    geodesic: true,
+                    strokeColor: 'darkgreen',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2
+                });
+                mapPath.setMap(fsdmap);
+                instance.fsdData.pilots[pilot.cs].fp = mapPath;
+            });
+        }
+    };
+
+    var loadData = function ($scope) {
         instance.timestamp = Date.now();
+        console.info("loadData", instance.timestamp);
         FsdDataService.fetchClients().success(function (clientData, status) {
             console.info("FsdDataService::fetchClients::success");
             //console.log(clientData);
@@ -86,7 +274,6 @@ app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', funct
                 return;
             }
             var cObj = clientData.lastElementChild ? clientData.lastElementChild.children : clientData.lastChild.childNodes;
-
             if (cObj.length > 0) {
                 //got fresh data, reset
                 instance.clients.pilots = [];
@@ -114,44 +301,23 @@ app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', funct
         }).error(function (data, status) {
             console.info("FsdDataService::fetchClients::error");
             console.error(data);
-            instance.clients.pilots = [];
-            instance.clients.atcs = [];
+            //instance.clients.pilots = [];
+            //instance.clients.atcs = [];
         });
     };
-    fnLoadData();
+    loadData();
 }]);
 
-app.directive('fsdmap', function () {
-    console.info("directive fsdmap");
-    return {
-        restrict: 'E',
-        replace: false,
-        templateUrl: "App/templates/gmap.html?v=0",
-        link: function ($scope, $element, attr, ctrl) {
-            console.info("directive jaGmap LINK");
-            var mapOptions = {
-                zoom: 8,
-                center: new google.maps.LatLng(-34.397, 150.644)
-            };
-            var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-            ctrl.registerMap(map);
-        },
-        controller: 'GmapController'
-    };
-});
-
-app.directive('sidebar', [function ($window, $parse) {
-    console.info("directive sidebar");
-    return {
-        restrict: 'E',
-        replace: false,
-        templateUrl: "App/templates/pilots.html",
-        link: function ($scope, $element, attr, controller) {
-            console.info("directive jaPilots LINK");
-        }
-    };
+//http://stackoverflow.com/questions/16098430/angular-ie-caching-issue-for-http
+//does it have side effects?
+app.config(['$httpProvider', function ($httpProvider) {
+    //initialize get if not there
+    if (!$httpProvider.defaults.headers.get) {
+        $httpProvider.defaults.headers.get = {};
+    }
+    //disable IE ajax request caching
+    $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
 }]);
-
 
 function initialize() {
     console.info("initialize");

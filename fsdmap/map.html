@@ -11,6 +11,11 @@
               font-family: 'Ubuntu Mono';
           }
 
+          h3 {
+              font-weight: bold;
+              font-size: 1.2rem;
+          }
+
           header, header *, aside, aside * {
               box-sizing: border-box;
           }
@@ -38,11 +43,40 @@
           aside section {
               margin: 10px;
               position: relative;
-              font-size: 0.8rem;
+              font-size: 0.9rem;
+          }
+
+          aside section p {
+              font-weight: bold;
+              font-size: 1.1rem;
           }
 
           aside:hover div.translucent {
               opacity: 1;
+          }
+
+          aside ul {
+              list-style: none;
+              padding: 0;
+          }
+
+          aside li {
+              margin: 1ex 0;
+          }
+
+          /* https://icomoon.io/app/#/select/image */
+          .svg.icon {
+              width: 0.6rem;
+              margin: 0 2px 0;
+          }
+
+          *[ng-click] {
+              cursor: pointer;
+          }
+
+          .active {
+              font-weight: bold;
+              color: blue;
           }
 
           div.translucent {
@@ -50,7 +84,7 @@
               top: 0;
               width: 100%;
               height: 100%;
-              background-color: antiquewhite;
+              background-color: white;
               opacity: 0.6;
           }
 
@@ -64,14 +98,37 @@
   <body ng-controller="GmapController as gc">
   <header>
       <div class="translucent"></div>
-      <h3>in base html</h3>
       {{gc.map}}
   </header>
 
-  <fsdmap></fsdmap>
-  <sidebar></sidebar>
+  <div id="map-canvas">
+
+  </div>
+
+  <aside>
+      <div class="translucent"></div>
+      <section>
+          <p>Pilots</p>
+          <ul>
+              <li ng-repeat="pilot in gc.fsdData.pilots">
+                  <input type="radio" name="follow-toggle" ng-click="followClient($event, this)">
+                  <span ng-click="centerClient($event, this)"><img src="Content/Icons/spinner.svg" class="svg icon">{{pilot.cs}}</span>,
+                  <span ng-click="loadFP($event, this)" title="{{pilot.route}}"><img src="Content/Icons/list.svg"
+                                                                                     class="svg icon">{{pilot.from}}-{{pilot.to}}</span>,
+                  <span>{{pilot.acf}}, {{pilot.gs}}kt, {{pilot.hdg}}°</span>
+              </li>
+          </ul>
+      </section>
+      <section>
+          <p>Controller</p>
+          <ul>
+              <li ng-repeat="atc in gc.clients.atcs">{{atc.cs}}, {{atc.name}}, {{atc.acf}}</li>
+          </ul>
+      </section>
+  </aside>
 
   <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
+  <script type="text/javascript" src="App/services/geomath.js"></script>
   <script type="text/javascript" src="App/app.js"></script>
   <script type="text/javascript" src="App/services/fsdDataService.js"></script>
 
