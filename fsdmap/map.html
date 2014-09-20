@@ -38,6 +38,7 @@
               right: 0px;
               bottom: 0px;
               z-index: 2;
+              overflow: auto;
           }
 
           aside section {
@@ -49,6 +50,9 @@
           aside section p {
               font-weight: bold;
               font-size: 1.1rem;
+              margin: 0.2rem 0;
+              padding: 0.2rem 0;
+              border-bottom: 1px solid silver;
           }
 
           aside:hover div.translucent {
@@ -61,7 +65,24 @@
           }
 
           aside li {
-              margin: 1ex 0;
+              padding: 0 0 0.2rem 0;
+          }
+
+          /*
+          aside li input { display: inline-block; float: left;}
+          aside li div {  margin-left: 1rem; }
+          */
+
+          aside li {
+              display: flex;
+              border-bottom: 1px solid silver;
+          }
+
+          aside li input {
+          }
+
+          aside li div {
+              padding-top: 2px;
           }
 
           /* https://icomoon.io/app/#/select/image */
@@ -109,13 +130,21 @@
       <div class="translucent"></div>
       <section>
           <p>Pilots</p>
+
+          <div>
+              <span><input type="radio" name="follow-toggle" checked ng-click="followClient()">Don't follow</span>
+              <span><input type="checkbox" ng-model="gc.showTracks">Show tracks</span>
+          </div>
           <ul>
               <li ng-repeat="pilot in gc.fsdData.pilots">
                   <input type="radio" name="follow-toggle" ng-click="followClient($event, this)">
-                  <span ng-click="centerClient($event, this)"><img src="Content/Icons/spinner.svg" class="svg icon">{{pilot.cs}}</span>,
-                  <span ng-click="loadFP($event, this)" title="{{pilot.route}}"><img src="Content/Icons/list.svg"
-                                                                                     class="svg icon">{{pilot.from}}-{{pilot.to}}</span>,
-                  <span>{{pilot.acf}}, {{pilot.gs}}kt, {{pilot.hdg}}°</span>
+
+                  <div>
+                      <span ng-click="centerClient($event, this)"><img src="Content/Icons/spinner.svg" class="svg icon">{{pilot.cs}}</span>,
+                      <span ng-click="loadFP($event, this)" title="{{pilot.route}}"><img src="Content/Icons/list.svg"
+                                                                                         class="svg icon">{{pilot.from}}-{{pilot.to}}</span>,
+                      <span>{{pilot.acf}}, {{pilot.gs}}kt, {{pilot.hdg}}°</span>
+                  </div>
               </li>
           </ul>
       </section>

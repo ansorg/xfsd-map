@@ -20,7 +20,7 @@ app.factory('FsdDataService', ['$http', function ($http) {
             console.info("FsdDataService::fetchFP", cs, from, to, route);
             return $http({
                 method: "GET",
-                url: "data.php?&action=track&cs=" + cs + "&from=" + from + "&to=" + to + "&route=" + route.replace(/ /g, ','),
+                url: "data.php?&action=track&cs=" + cs + "&from=" + from + "&to=" + to + "&route=" + route.replace(/ /g, '|'),
                 responseType: "json",
                 headers: {
                     Accept: "text/json",
