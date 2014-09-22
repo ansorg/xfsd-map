@@ -4,7 +4,7 @@ var app = angular.module('app', []);
 app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', function ($scope, $interval, FsdDataService) {
     console.info("GmapController");
     console.info("load settings", localStorage.fsdmap);
-    var settings = localStorage.fsdmap ? JSON.parse(localStorage.fsdmap) : {};
+    var settings = localStorage.fsdmap ? JSON.parse(localStorage.fsdmap) : { mapType: 'terrain' };
     var storeSettings = function () {
         localStorage.fsdmap = JSON.stringify(settings);
     };
@@ -82,7 +82,7 @@ app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', funct
     var mapOptions = {
         zoom: 8,
         center: new google.maps.LatLng(20.397, 20.644),
-        mapTypeId: settings.mapType.toLowerCase() || 'terrain'
+        mapTypeId: settings.mapType.toLowerCase()
     };
     var fsdmap = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     google.maps.event.addListener(fsdmap, 'maptypeid_changed', function () {
