@@ -80,8 +80,8 @@ app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', funct
     }; //google.maps.MapTypeId
 
     var mapOptions = {
-        zoom: 8,
-        center: new google.maps.LatLng(20.397, 20.644),
+        zoom: 2,
+        center: new google.maps.LatLng(0.0, 43.0),
         mapTypeId: settings.mapType.toLowerCase()
     };
     var fsdmap = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
@@ -180,6 +180,9 @@ app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', funct
         pilot.to = newData.to;
         pilot.type = newData.type;
         pilot.T = getIconType(pilot.acf || '');
+        pilot.getInfoText = function () {
+            return pilot.cs + ": " + pilot.acf + " " + pilot.hdg + "° " + pilot.gs + "kt " + pilot.alt + "ft<br>" + pilot.route;
+        };
         return pilot;
     };
 
@@ -216,6 +219,7 @@ app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', funct
                         anchor: planeIcons[pilot.T].anchor
                     });
                     //add base icon rotation to actual heading
+                    pilot.infoWindow.setContent(pilot.getInfoText());
                 }
                 if (pilot.followed) {
                     console.info("following", pilot.cs);
@@ -251,8 +255,16 @@ app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', funct
                 if (instance.showTracks) {
                     track.setMap(fsdmap);
                 }
+                var infowindow = new google.maps.InfoWindow({
+                    content: pilot.getInfoText()
+                });
+
+                google.maps.event.addListener(marker, 'click', function () {
+                    infowindow.open(fsdmap, marker);
+                });
                 pilot.marker = marker;
                 pilot.track = track;
+                pilot.infoWindow = infowindow;
                 instance.fsdData.pilots[updatedPilot.cs] = pilot;
                 bounds.extend(point);
             }
@@ -284,6 +296,10 @@ app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', funct
                 pilot.marker.setIcon(icon);
             }
         });
+    };
+
+    $scope.toggleAside = function (evt, data) {
+        evt.target.parentElement.classList.toggle("closed");
     };
 
     $scope.followClient = function (evt, data) {
@@ -376,6 +392,7 @@ app.controller('GmapController', ['$scope', '$interval', 'FsdDataService', funct
                 }
 
                 if (client.type == "P") {
+                    client.hdg = 0;
                     instance.clients.pilots.push(client);
                 } else {
                     instance.clients.atcs.push(client);

@@ -11,6 +11,10 @@
               font-family: 'Ubuntu Mono';
           }
 
+          body {
+              overflow: hidden;
+          }
+
           h3 {
               font-weight: bold;
               font-size: 1.2rem;
@@ -36,9 +40,41 @@
               width: 20em;
               top: 50px;
               right: 0px;
-              bottom: 0px;
+              bottom: 16px;
               z-index: 2;
               overflow: auto;
+              transform: translate(0);
+              transition: transform .2s ease-in-out;
+          }
+
+          aside.closed {
+              transform: translate(18em);
+              padding-left: 2em;
+              overflow: hidden;
+          }
+
+          aside button#aside-toggle {
+              background-image: url("Content/Icons/arrow-light-round-right-circle.svg");
+              background-repeat: no-repeat;
+              background-size: 32px;
+              background-position: top right;
+          }
+
+          aside #aside-toggle {
+              position: absolute;
+              right: 0;
+              top: 0;
+              border: none;
+              padding: 0;
+              cursor: pointer;
+              width: 32px;
+              height: 32px;
+              transform: translate(-0em) rotate(0deg);
+              transition: transform .2s ease-in-out;
+          }
+
+          aside.closed #aside-toggle {
+              transform: translate(-18em) rotate(180deg);
           }
 
           aside section {
@@ -130,7 +166,6 @@
       <div class="translucent"></div>
       <section>
           <p>Pilots</p>
-
           <div>
               <span><input type="radio" name="follow-toggle" checked ng-click="followClient()">Don't follow</span>
               <span><input type="checkbox" ng-model="gc.showTracks">Show tracks</span>
@@ -154,6 +189,8 @@
               <li ng-repeat="atc in gc.clients.atcs">{{atc.cs}}, {{atc.name}}, {{atc.acf}}</li>
           </ul>
       </section>
+      <img src="Content/Icons/arrow-light-round-right-circle.svg" id="aside-toggle"
+           ng-click="toggleAside($event, this)">
   </aside>
 
   <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
