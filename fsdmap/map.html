@@ -8,7 +8,8 @@
               margin: 0;
               width: 100%;
               height: 100%;
-              font-family: 'Ubuntu Mono';
+              font-family: Roboto, 'Ubuntu Mono', sans-serif;
+              font-size: 10pt;
           }
 
           body {
@@ -48,8 +49,8 @@
           }
 
           aside.closed {
-              transform: translate(18em);
-              padding-left: 2em;
+              transform: translate(17em);
+              padding-left: 3em;
               overflow: hidden;
           }
 
@@ -71,16 +72,16 @@
               height: 32px;
               transform: translate(-0em) rotate(0deg);
               transition: transform .2s ease-in-out;
+              opacity: 0.5;
           }
 
           aside.closed #aside-toggle {
-              transform: translate(-18em) rotate(180deg);
+              transform: translate(-17em) rotate(180deg);
           }
 
           aside section {
               margin: 10px;
               position: relative;
-              font-size: 0.9rem;
           }
 
           aside section p {
@@ -92,6 +93,10 @@
           }
 
           aside:hover div.translucent {
+              opacity: 1;
+          }
+
+          aside:hover #aside-toggle {
               opacity: 1;
           }
 
@@ -111,14 +116,14 @@
 
           aside li {
               display: flex;
-              border-bottom: 1px solid silver;
+              border-top: 1px solid silver;
           }
 
           aside li input {
           }
 
           aside li div {
-              padding-top: 2px;
+              padding-top: 0px;
           }
 
           /* https://icomoon.io/app/#/select/image */
@@ -149,6 +154,18 @@
               height: 100%;
               width: 100%;
           }
+
+          #logo {
+              position: absolute;
+              bottom: 30px;
+              left: 6px;
+          }
+
+          /* gmap overrides */
+          .gm-style .gm-style-iw {
+              font-size: 11px;
+          }
+
       </style>
   </head>
   <!-- https://github.com/ericpanorel/AngularGmap -->
@@ -177,7 +194,7 @@
                   <div>
                       <span ng-click="centerClient($event, this)"><img src="Content/Icons/spinner.svg" class="svg icon">{{pilot.cs}}</span>,
                       <span ng-click="loadFP($event, this)" title="{{pilot.route}}"><img src="Content/Icons/list.svg"
-                                                                                         class="svg icon">{{pilot.from}}-{{pilot.to}}</span>,
+                                                                                         class="svg icon">{{pilot.from}}-{{pilot.to}}</span>,<br>
                       <span>{{pilot.acf}}, {{pilot.gs}}kt, {{pilot.hdg}}°</span>
                   </div>
               </li>
@@ -192,6 +209,12 @@
       <img src="Content/Icons/arrow-light-round-right-circle.svg" id="aside-toggle"
            ng-click="toggleAside($event, this)">
   </aside>
+
+  <div id="logo">
+      <a href="http://x-flightserver.net/" target="_blank" title="Click here to register and fly on this map!">
+          <img src="http://x-flightserver.net/pics/logo.jpg" alt="logo" width="100">
+      </a>
+  </div>
 
   <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
   <script type="text/javascript" src="App/services/geomath.js"></script>
