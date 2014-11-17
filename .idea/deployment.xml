@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="On explicit save action (Ctrl+S)" serverName="xfsd.ansorg-web.de" overwriteAll="false" uploadOnCheckin="d1f619eb-cea2-4475-b77c-93e4d09a6ac4">
+  <component name="PublishConfigData" autoUpload="On explicit save action" serverName="xfsd.ansorg-web.de" overwriteAll="false" uploadOnCheckin="d1f619eb-cea2-4475-b77c-93e4d09a6ac4">
     <serverData>
+      <paths name="xfsd-live">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/fsdmap" local="$PROJECT_DIR$/fsdmap" web="/fsdmap" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="xfsd.ansorg-web.de">
         <serverdata>
           <mappings>
@@ -14,4 +21,3 @@
     <option name="myAutoUpload" value="ON_EXPLICIT_SAVE" />
   </component>
 </project>
-
